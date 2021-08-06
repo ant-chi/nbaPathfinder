@@ -1,0 +1,6 @@
+streamlit==0.84.0
+pandas==1.2.4
+numpy==1.20.2
+pyvis==0.1.9
+pyviz-comms==2.0.1
+networkx==2.5.1
