@@ -85,11 +85,11 @@ def addNode(graph, value, source, target):
     if value == source:
         graph.add_node(value, title=nodeTitle(value), label=" ",
                        shape="circularImage", image=images[value],
-                       size=120, borderWidth=12, borderWidthSelected=16, color="green", mass=9)
+                       size=120, borderWidth=12, borderWidthSelected=18, color="green", mass=9)
     elif value == target:
         graph.add_node(value, title=nodeTitle(value), label=" ",
                        shape="circularImage", image=images[value],
-                       size=120, borderWidth=12, borderWidthSelected=16, color="red", mass=9)
+                       size=120, borderWidth=12, borderWidthSelected=18, color="red", mass=9)
     else:
         graph.add_node(value, title=nodeTitle(value), label=" ",
                        shape="circularImage", image=images[value],
@@ -159,11 +159,11 @@ def shortestPathsGraph(source, target):
             G.options["physics"]["barnesHut"]["gravitationalConstant"] = -5500
             G.options["physics"]["barnesHut"]["springLength"] = 600
         elif len(paths) >= 70 and len(paths) < 200:
-            G.options["physics"]["barnesHut"]["gravitationalConstant"] = -30000
-            G.options["physics"]["barnesHut"]["springLength"] = 850
+            G.options["physics"]["barnesHut"]["gravitationalConstant"] = -32500
+            G.options["physics"]["barnesHut"]["springLength"] = 900
             G.options["physics"]["timestep"] = 1
         elif len(paths) >= 200:
-            G.options["physics"]["barnesHut"]["gravitationalConstant"] = -75000
+            G.options["physics"]["barnesHut"]["gravitationalConstant"] = -80000
             G.options["physics"]["barnesHut"]["springLength"] = 2500
             G.options["physics"]["timestep"] = 1
 
@@ -282,11 +282,14 @@ with st.beta_expander("Details about this app"):
         -   A majority of issues exist because data prior to the 1980-81 seasons was not scraped, so
         players that were active in prior seasons may not be accurately represented. For example,
         searching for paths between the legendary George Gervin and Larry Kenon will not show that
-        they were teammates for 5 seasons on the San Antonio Spurs from 1976-1980.
+        they were teammates for 5 seasons on the San Antonio Spurs from 1976-1980. Some issues also
+        pop up for players that have had their contracts bought out or waived since they still appear
+        on a team's payroll. For example searching for paths between Luol Deng and Lebron James show
+        that they are teammates on the Los Angeles Lakers even though this is not true.
     -   Why isn't Player XYZ showing up in the search bar?
         -   Players that have logged less then 2500 career minutes or were not on an NBA roster
         during the 1980-2021 seasons will not appear in the search bar.
     -   The tooltip popups are blocking the rest of the graph.
-        -   Clicking on an edge or node instead of hovering over them will hide the tooltips while
+        -   Clicking on an edge or node instead of hovering over them will hide the tooltips, while
         still highlighting connected edges and nodes.
     """)
