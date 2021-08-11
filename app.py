@@ -1,5 +1,4 @@
 import time
-import random
 import itertools
 import streamlit as st
 import streamlit.components.v1 as components
@@ -22,6 +21,8 @@ def loadGraph():
 
     return completeGraph, completeEdges, completeNodes
 
+
+
 @st.cache(allow_output_mutation=True, suppress_st_warning=True)
 def loadData():
     playerDf = pd.read_csv("data/playerDf.csv")
@@ -39,7 +40,7 @@ def loadData():
 
 def nodeNeighbors(nodes, adjacencyList):
     """
-    Helper function to format a node's neighbors with HTML as part of a node's tooltips.
+    Format a node's neighbors with HTML as part of a node's tooltips.
     """
     for node in nodes:
         teammates = [names[i] for i in adjacencyList[node["id"]]]
@@ -50,28 +51,32 @@ def nodeNeighbors(nodes, adjacencyList):
 
 def edgeTitle(edge, metadata):
     """
-    Helper function to format an edge's metadata with HTML as part of an edge's tooltip.
+    Format an edge's metadata with HTML as part of an edge's tooltip.
     """
-    players = "<b>" + ", ".join([names[i] for i in edge]) + "</b>"
-    seasonsAsTeammates = "Seasons as teammates: {}".format(len(metadata[0]))
+    text = []
+    text.append("<b>" + ", ".join([names[i] for i in edge]) + "</b>")
+    text.append("Seasons as teammates: {}".format(len(metadata[0])))
+
     mutualTeams = ""
     for team, years in metadata[1].items():
         years = [i[:4] for i in years]
         mutualTeams += team + ": " + ", ".join(years) + "<br>"
-    mutualTeams = mutualTeams[:-4]    # remove trailing line break tag
+    text.append(mutualTeams[:-4])       # remove trailing line break tag
 
-    return players + "<br>" + seasonsAsTeammates + "<br>" + mutualTeams
+    return "<br>".join(text)
 
 
 
 def nodeTitle(nodeValue):
     """
-    Helper function to format a node's metadata with HTML as part of a node's tooltip
+    Format a node's metadata with HTML as part of a node's tooltip
     """
-    title = "<b>{}</b>".format(names[nodeValue])
-    title += "<br> <img src={} alt='Player Image' width='100'>".format(images[nodeValue])
-    title += "<br> Years of Experience: {}".format(len(seasons[nodeValue]))
-    title += "<br> <br> Teams: <br> &emsp; &emsp;" + "<br> &emsp; &emsp;".join(teams[nodeValue])
+    text = []
+    text.append("<b>{}</b>".format(names[nodeValue]))
+    text.append("<img src={} alt='Player Image' width='100'>".format(images[nodeValue]))
+    text.append("Years of Experience: {}".format(len(seasons[nodeValue])))
+    text.append("<br> Teams: <br> &emsp; &emsp;" + "<br> &emsp; &emsp;".join(teams[nodeValue]))
+    title = "<br>".join(text)
 
     return title
 
@@ -79,8 +84,8 @@ def nodeTitle(nodeValue):
 
 def addNode(graph, value, source, target):
     """
-    Helper function that adds nodes to displayed graph. Source and target nodes are larger and
-    marked by a thick green or red border.
+    Adds nodes to displayed graph. Source and target nodes are larger and marked by a thick green
+    or red border.
     """
     if value == source:
         graph.add_node(value, title=nodeTitle(value), label=" ",
@@ -98,6 +103,9 @@ def addNode(graph, value, source, target):
 
 
 def pathsDf(paths):
+    """
+    Converts shortest paths into a dataframe
+    """
     data = []
     for path in paths:
         row = []
@@ -203,9 +211,9 @@ st.title("NBA Pathfinder :basketball:")
 st.subheader("Find shortest paths of mutual teammates between two players!")
 
 with st.form(" "):
-    empty_1, selectBox_1, empty_2, selectBox_2, empty_3 = st.beta_columns([0.2, 0.5, 0.5, 0.45, 0.3])
-    empty_4, image_1, empty_5, image_2 = st.beta_columns([0.5, 1, 0.5, 1])
-    button_1, button_2, empty_6 = st.beta_columns(([0.15, 0.2, 1]))
+    empty_1, selectBox_1, empty_2, selectBox_2, empty_3 = st.beta_columns([0.25, 0.45, 0.5, 0.45, 0.25])
+    empty_4, image_1, empty_5, image_2 = st.beta_columns([0.6, 1, 0.6, 1])
+    button_1, button_2, empty_6 = st.beta_columns(([0.2, 0.25, 1]))
 
     player_1 = selectBox_1.selectbox(label="Player 1", options=list(selectboxNames.values()),
                                      format_func=lambda x: names[x], index=696, on_change=None)
@@ -222,7 +230,7 @@ pathsExpander = st.beta_expander("View paths")
 
 with graphCol:
     if randomButton:
-        player_1, player_2 = random.sample(list(names.keys()), 2)
+        player_1, player_2 = np.random.choice(list(names.keys()), 2, replace=False)
 
     graph, text, pathsDf = shortestPathsGraph(player_1, player_2)
 
@@ -234,12 +242,13 @@ with graphCol:
 
         graph.write_html("graph.html")
         components.html(graph.html, height=700)
-        st.write("This graph is fully interactive! Try dragging, clicking on, and hovering over nodes and edges!")
+        st.write("This graph is fully interactive and has a physics engine! Try dragging, clicking \
+                  on, and hovering over nodes and edges!")
         # pv_static(graph)
         with pathsExpander:
             st.dataframe(pathsDf)
             st.markdown("Each row represents a path of mutual teammates that connects the source and \
-            target players. <br> A row can be read in either direction since this is an\
+            target players. <br> A row can be read in either direction since this is an \
             undirected collaboration graph where order does not matter.", unsafe_allow_html=True)
 
         st.success("Query took: {} seconds".format(np.round(time.time() - start, 4)))
@@ -253,8 +262,8 @@ with graphCol:
         st.markdown(htmlDownload, unsafe_allow_html=True)
 
 
-image_1.image(images[player_1], width=140)
-image_2.image(images[player_2], width=140)
+image_1.image(images[player_1], width=150)
+image_2.image(images[player_2], width=150)
 
 
 with st.beta_expander("Details about this app"):
@@ -263,7 +272,7 @@ with st.beta_expander("Details about this app"):
     -   How does this app work?
         -   The goal of this app is to find and visualize all the shortest paths between two NBA
         players by connecting them through mutual teammates. The resulting output will be a
-        collaboration network of players. This is similar to the
+        collaboration network of players similar to the famous
         [Paul Erdos](https://en.wikipedia.org/wiki/Erd%C5%91s_number) and
         [Kevin Bacon](https://en.wikipedia.org/wiki/Six_Degrees_of_Kevin_Bacon) numbers in
         mathematics and film.
@@ -284,7 +293,7 @@ with st.beta_expander("Details about this app"):
         searching for paths between the legendary George Gervin and Larry Kenon will not show that
         they were teammates for 5 seasons on the San Antonio Spurs from 1976-1980. Some issues also
         pop up for players that have had their contracts bought out or waived since they still appear
-        on a team's payroll. For example searching for paths between Luol Deng and Lebron James show
+        on a team's payroll. For example, searching for paths between Luol Deng and Lebron James show
         that they are teammates on the Los Angeles Lakers even though this is not true.
     -   Why isn't Player XYZ showing up in the search bar?
         -   Players that have logged less then 2500 career minutes or were not on an NBA roster
