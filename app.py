@@ -13,13 +13,13 @@ st.set_page_config(layout="wide", page_title="NBA Erdos", page_icon=":basketball
 start = time.time()
 
 
-@st.cache(allow_output_mutation=True, suppress_st_warning=True)
-def loadGraph():
-    completeGraph = nx.read_gpickle("data/completeGraph.gpickle")
-    completeEdges = pd.read_pickle("data/completeEdges.pkl")
-    completeNodes = pd.read_pickle("data/completeNodes.pkl")
-
-    return completeGraph, completeEdges, completeNodes
+# @st.cache(allow_output_mutation=True, suppress_st_warning=True)
+# def loadGraph():
+#     # completeGraph = nx.read_gpickle("data/completeGraph.gpickle")
+#     completeEdges = pd.read_pickle("data/completeEdges.pkl")
+#     completeNodes = pd.read_pickle("data/completeNodes.pkl")
+#
+#     return completeGraph, completeEdges, completeNodes
 
 
 
@@ -204,7 +204,7 @@ def shortestPathsGraph(source, target):
 
 
 
-completeGraph, completeEdges, completeNodes = loadGraph()
+# completeGraph, completeEdges, completeNodes = loadGraph()
 teams, seasons, names, selectboxNames, images = loadData()
 
 st.title("NBA Pathfinder :basketball:")
@@ -225,45 +225,45 @@ with st.form(" "):
     randomButton = button_2.form_submit_button("I'm feeling lucky! 🍀")
 
 
-graphCol = st.beta_container()
-pathsExpander = st.beta_expander("View paths")
-
-with graphCol:
-    if randomButton:
-        player_1, player_2 = np.random.choice(list(names.keys()), 2, replace=False)
-
-    graph, text, pathsDf = shortestPathsGraph(player_1, player_2)
-
-    if graph == None:   # When no paths are found
-        st.title(text)
-    else:
-        st.title(text[0])
-        st.subheader(text[1])
-
-        graph.write_html("graph.html")
-        components.html(graph.html, height=700)
-        st.write("This graph is fully interactive and has a physics engine! Try dragging, clicking \
-                  on, and hovering over nodes and edges!")
-        # pv_static(graph)
-        with pathsExpander:
-            st.dataframe(pathsDf)
-            st.markdown("Each row represents a path of mutual teammates that connects the source and \
-            target players. <br> A row can be read in either direction since this is an \
-            undirected collaboration graph where order does not matter.", unsafe_allow_html=True)
-
-        st.success("Query took: {} seconds".format(np.round(time.time() - start, 4)))
-
-        # f = open("graph.html", "r")
-        # data = f.read()
-        # f.close()
-        # b64 = base64.b64encode(data.encode()).decode()
-        b64 = base64.b64encode(graph.html.encode()).decode()
-        htmlDownload = f'<a href="data:text/html;base64,{b64}">Save visualization as HTML</a> (Right-Click + \"Save Link As\")'
-        st.markdown(htmlDownload, unsafe_allow_html=True)
-
-
-image_1.image(images[player_1], width=150)
-image_2.image(images[player_2], width=150)
+# graphCol = st.beta_container()
+# pathsExpander = st.beta_expander("View paths")
+#
+# with graphCol:
+#     if randomButton:
+#         player_1, player_2 = np.random.choice(list(names.keys()), 2, replace=False)
+#
+#     graph, text, pathsDf = shortestPathsGraph(player_1, player_2)
+#
+#     if graph == None:   # When no paths are found
+#         st.title(text)
+#     else:
+#         st.title(text[0])
+#         st.subheader(text[1])
+#
+#         graph.write_html("graph.html")
+#         components.html(graph.html, height=700)
+#         st.write("This graph is fully interactive and has a physics engine! Try dragging, clicking \
+#                   on, and hovering over nodes and edges!")
+#         # pv_static(graph)
+#         with pathsExpander:
+#             st.dataframe(pathsDf)
+#             st.markdown("Each row represents a path of mutual teammates that connects the source and \
+#             target players. <br> A row can be read in either direction since this is an \
+#             undirected collaboration graph where order does not matter.", unsafe_allow_html=True)
+#
+#         st.success("Query took: {} seconds".format(np.round(time.time() - start, 4)))
+#
+#         # f = open("graph.html", "r")
+#         # data = f.read()
+#         # f.close()
+#         # b64 = base64.b64encode(data.encode()).decode()
+#         b64 = base64.b64encode(graph.html.encode()).decode()
+#         htmlDownload = f'<a href="data:text/html;base64,{b64}">Save visualization as HTML</a> (Right-Click + \"Save Link As\")'
+#         st.markdown(htmlDownload, unsafe_allow_html=True)
+#
+#
+# image_1.image(images[player_1], width=150)
+# image_2.image(images[player_2], width=150)
 
 
 with st.beta_expander("Details about this app"):
