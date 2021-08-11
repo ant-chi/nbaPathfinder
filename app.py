@@ -9,6 +9,7 @@ from pyvis import network as net
 import base64
 import numpy as np
 
+
 st.set_page_config(layout="wide", page_title="NBA Erdos", page_icon=":basketball:")
 start = time.time()
 
@@ -16,10 +17,11 @@ start = time.time()
 @st.cache(allow_output_mutation=True, suppress_st_warning=True)
 def loadGraph():
 #     # completeGraph = nx.read_gpickle("data/completeGraph.gpickle")
+    completeGraph = nx.read_edgelist("data/completeGraph.edgelist.gz")
     completeEdges = pd.read_pickle("data/completeEdges.pkl")
     completeNodes = pd.read_pickle("data/completeNodes.pkl")
 
-#     return completeGraph, completeEdges, completeNodes
+    return completeGraph, completeEdges, completeNodes
 
 
 
@@ -204,8 +206,7 @@ def shortestPathsGraph(source, target):
 
 
 
-# completeGraph, completeEdges, completeNodes = loadGraph()
-loadGraph()
+completeGraph, completeEdges, completeNodes = loadGraph()
 teams, seasons, names, selectboxNames, images = loadData()
 
 st.title("NBA Pathfinder :basketball:")
