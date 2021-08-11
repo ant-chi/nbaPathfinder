@@ -13,12 +13,12 @@ st.set_page_config(layout="wide", page_title="NBA Erdos", page_icon=":basketball
 start = time.time()
 
 
-# @st.cache(allow_output_mutation=True, suppress_st_warning=True)
-# def loadGraph():
+@st.cache(allow_output_mutation=True, suppress_st_warning=True)
+def loadGraph():
 #     # completeGraph = nx.read_gpickle("data/completeGraph.gpickle")
-#     completeEdges = pd.read_pickle("data/completeEdges.pkl")
-#     completeNodes = pd.read_pickle("data/completeNodes.pkl")
-#
+    completeEdges = pd.read_pickle("data/completeEdges.pkl")
+    completeNodes = pd.read_pickle("data/completeNodes.pkl")
+
 #     return completeGraph, completeEdges, completeNodes
 
 
@@ -205,6 +205,7 @@ def shortestPathsGraph(source, target):
 
 
 # completeGraph, completeEdges, completeNodes = loadGraph()
+loadGraph()
 teams, seasons, names, selectboxNames, images = loadData()
 
 st.title("NBA Pathfinder :basketball:")
@@ -225,8 +226,8 @@ with st.form(" "):
     randomButton = button_2.form_submit_button("I'm feeling lucky! 🍀")
 
 
-# graphCol = st.beta_container()
-# pathsExpander = st.beta_expander("View paths")
+graphCol = st.beta_container()
+pathsExpander = st.beta_expander("View paths")
 #
 # with graphCol:
 #     if randomButton:
