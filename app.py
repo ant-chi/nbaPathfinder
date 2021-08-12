@@ -16,7 +16,6 @@ start = time.time()
 
 @st.cache(allow_output_mutation=True, suppress_st_warning=True)
 def loadGraph():
-#     # completeGraph = nx.read_gpickle("data/completeGraph.gpickle")
     completeGraph = nx.read_edgelist("data/completeGraph.edgelist.gz")
     completeEdges = pd.read_pickle("data/completeEdges.pkl")
     completeNodes = pd.read_pickle("data/completeNodes.pkl")
@@ -37,7 +36,6 @@ def loadData():
     images = imageDf[["Player Key", "Image"]].set_index("Player Key").to_dict()["Image"]
 
     return teams, seasons, names, selectboxNames, images
-    # selectboxNames
 
 
 
