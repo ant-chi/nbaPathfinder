@@ -37,6 +37,7 @@ def loadData():
     images = imageDf[["Player Key", "Image"]].set_index("Player Key").to_dict()["Image"]
 
     return teams, seasons, names, selectboxNames, images
+    # selectboxNames
 
 
 
@@ -132,7 +133,7 @@ def shortestPathsGraph(source, target):
         text = []
         paths = list(nx.all_shortest_paths(completeGraph, source, target))
 
-        G = net.Network(width="100%", height="700px", bgcolor="#222222")
+        G = net.Network(width="100%", height="725px", bgcolor="#222222")
         # G = net.Network(width="1300px", height="700px", bgcolor="#222222")
         G.set_options("""
         var options = {
@@ -205,22 +206,28 @@ def shortestPathsGraph(source, target):
         return None, "There were no paths found between {} and {}".format(source, target), None
 
 
-
+########## App begins here ##########
 completeGraph, completeEdges, completeNodes = loadGraph()
 teams, seasons, names, selectboxNames, images = loadData()
 
 st.title("NBA Pathfinder :basketball:")
 st.subheader("Find shortest paths of mutual teammates between two players!")
 
+
 with st.form(" "):
     empty_1, selectBox_1, empty_2, selectBox_2, empty_3 = st.beta_columns([0.25, 0.45, 0.5, 0.45, 0.25])
     empty_4, image_1, empty_5, image_2 = st.beta_columns([0.6, 1, 0.6, 1])
     button_1, button_2, empty_6 = st.beta_columns(([0.2, 0.25, 1]))
 
-    player_1 = selectBox_1.selectbox(label="Player 1", options=list(selectboxNames.values()),
+    # playerNames = list(selectboxNames.values())
+    # st.write(dict((playerNames[i], i) for i in range(len(playerNames))))
+
+    playerNames = list(selectboxNames.values())
+
+    player_1 = selectBox_1.selectbox(label="Player 1", options=playerNames,
                                      format_func=lambda x: names[x], index=696, on_change=None)
 
-    player_2 = selectBox_2.selectbox(label="Player 2", options=list(selectboxNames.values()),
+    player_2 = selectBox_2.selectbox(label="Player 2", options=playerNames,
                                      format_func=lambda x: names[x], index=1087, on_change=None)
 
     enterButton =  button_1.form_submit_button("Find paths!")
@@ -243,7 +250,7 @@ with graphCol:
         st.subheader(text[1])
 
         graph.write_html("graph.html")
-        components.html(graph.html, height=700)
+        components.html(graph.html, height=725)
         st.write("This graph is fully interactive and has a physics engine! Try dragging, clicking \
                   on, and hovering over nodes and edges!")
         # pv_static(graph)
@@ -272,12 +279,14 @@ with st.beta_expander("Details about this app"):
     st.markdown(
     """
     -   How does this app work?
-        -   The goal of this app is to find and visualize all the shortest paths between two NBA
-        players by connecting them through mutual teammates. The resulting output will be a
-        collaboration network of players similar to the famous
+        -   The purpose of this app is to find and visualize all the shortest paths between two NBA
+        players by connecting them through mutual teammates. The resulting output will be a score
+        that represents the minimum degree of connectivity between the players similar to the famous
         [Paul Erdos](https://en.wikipedia.org/wiki/Erd%C5%91s_number) and
         [Kevin Bacon](https://en.wikipedia.org/wiki/Six_Degrees_of_Kevin_Bacon) numbers in
-        mathematics and film.
+        mathematics and film. In addition this collaboration network of players is visualized,
+        which is both interesting to look at and helpful for identifying potential social networks
+        or relationships among players.
     -   How do I interpret a graph?
         -   Each node represents a player and each edge represents a teammate relationship. The
         source and target players are represented as large nodes with a green and red border. The
@@ -295,8 +304,9 @@ with st.beta_expander("Details about this app"):
         searching for paths between the legendary George Gervin and Larry Kenon will not show that
         they were teammates for 5 seasons on the San Antonio Spurs from 1976-1980. Some issues also
         pop up for players that have had their contracts bought out or waived since they still appear
-        on a team's payroll. For example, searching for paths between Luol Deng and Lebron James show
-        that they are teammates on the Los Angeles Lakers even though this is not true.
+        on a team's payroll. For example, Luol Deng and Lebron James have never been teammates but
+        searching for paths between them incorrectly states that they're currently teammates on the
+        Los Angeles Lakers.
     -   Why isn't Player XYZ showing up in the search bar?
         -   Players that have logged less then 2500 career minutes or were not on an NBA roster
         during the 1980-2021 seasons will not appear in the search bar.
