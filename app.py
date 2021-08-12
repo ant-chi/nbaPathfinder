@@ -39,6 +39,41 @@ def loadData():
 
 
 
+def addNode(graph, value, source, target):
+    """
+    Adds nodes to displayed graph. Source and target nodes are larger and marked by a thick green
+    or red border.
+    """
+    if value == source:
+        graph.add_node(value, title=nodeTitle(value), label=" ",
+                       shape="circularImage", image=images[value],
+                       size=120, borderWidth=12, borderWidthSelected=18, color="green", mass=9)
+    elif value == target:
+        graph.add_node(value, title=nodeTitle(value), label=" ",
+                       shape="circularImage", image=images[value],
+                       size=120, borderWidth=12, borderWidthSelected=18, color="red", mass=9)
+    else:
+        graph.add_node(value, title=nodeTitle(value), label=" ",
+                       shape="circularImage", image=images[value],
+                       size=85, borderWidth=3, borderWidthSelected=10, color="white", mass=9)
+
+
+
+def nodeTitle(nodeValue):
+    """
+    Format a node's metadata with HTML as part of a node's tooltip
+    """
+    text = []
+    text.append("<b>{}</b>".format(names[nodeValue]))
+    text.append("<img src={} alt='Player Image' width='110'>".format(images[nodeValue]))
+    text.append("Years of Experience: {}".format(len(seasons[nodeValue])))
+    text.append("<br> Teams: <br> &emsp; &emsp;" + "<br> &emsp; &emsp;".join(teams[nodeValue]))
+    title = "<br>".join(text)
+
+    return title
+
+
+
 def nodeNeighbors(nodes, adjacencyList):
     """
     Format a node's neighbors with HTML as part of a node's tooltips.
@@ -68,42 +103,7 @@ def edgeTitle(edge, metadata):
 
 
 
-def nodeTitle(nodeValue):
-    """
-    Format a node's metadata with HTML as part of a node's tooltip
-    """
-    text = []
-    text.append("<b>{}</b>".format(names[nodeValue]))
-    text.append("<img src={} alt='Player Image' width='100'>".format(images[nodeValue]))
-    text.append("Years of Experience: {}".format(len(seasons[nodeValue])))
-    text.append("<br> Teams: <br> &emsp; &emsp;" + "<br> &emsp; &emsp;".join(teams[nodeValue]))
-    title = "<br>".join(text)
-
-    return title
-
-
-
-def addNode(graph, value, source, target):
-    """
-    Adds nodes to displayed graph. Source and target nodes are larger and marked by a thick green
-    or red border.
-    """
-    if value == source:
-        graph.add_node(value, title=nodeTitle(value), label=" ",
-                       shape="circularImage", image=images[value],
-                       size=120, borderWidth=12, borderWidthSelected=18, color="green", mass=9)
-    elif value == target:
-        graph.add_node(value, title=nodeTitle(value), label=" ",
-                       shape="circularImage", image=images[value],
-                       size=120, borderWidth=12, borderWidthSelected=18, color="red", mass=9)
-    else:
-        graph.add_node(value, title=nodeTitle(value), label=" ",
-                       shape="circularImage", image=images[value],
-                       size=85, borderWidth=3, borderWidthSelected=10, color="white", mass=9)
-
-
-
-def pathsDf(paths):
+def pathAsDf(paths):
     """
     Converts shortest paths into a dataframe
     """
@@ -145,12 +145,12 @@ def shortestPathsGraph(source, target):
             "interaction": {"tooltipDelay": 0,
                             "hover": true
             },
-            "physics": {"barnesHut": {"gravitationalConstant": -1000,
+            "physics": {"barnesHut": {"gravitationalConstant": -1250,
                                       "centralGravity": 0.14,
                                       "springLength": 150,
                                       "springConstant": 0.0005,
                                       "damping": 0.07,
-                                      "avoidOverlap": 0.7},
+                                      "avoidOverlap": 0.9},
                         "maxVelocity": 35,
                         "minVelocity": 4,
                         "timestep": 0.5,
@@ -161,6 +161,7 @@ def shortestPathsGraph(source, target):
         }
         """)
 
+        # setting physics based on network density
         if len(paths) >= 10 and len(paths) < 30:
             G.options["physics"]["barnesHut"]["gravitationalConstant"] = -3000
             G.options["physics"]["barnesHut"]["springLength"] = 300
@@ -198,10 +199,11 @@ def shortestPathsGraph(source, target):
         else:
             text.append("There are {} shortest paths consisting of {} players between {} and {}".format(len(paths), len(G.nodes)-2,
                                                                                                         names[source], names[target]))
-        return G, text, pathsDf(paths)
+        return G, text, pathAsDf(paths)
 
     else:    # when there is no path between source and target
         return None, "There were no paths found between {} and {}".format(source, target), None
+
 
 
 ########## App begins here ##########
@@ -217,9 +219,6 @@ with st.form(" "):
     empty_4, image_1, empty_5, image_2 = st.beta_columns([0.6, 1, 0.6, 1])
     button_1, button_2, empty_6 = st.beta_columns(([0.2, 0.25, 1]))
 
-    # playerNames = list(selectboxNames.values())
-    # st.write(dict((playerNames[i], i) for i in range(len(playerNames))))
-
     playerNames = list(selectboxNames.values())
 
     player_1 = selectBox_1.selectbox(label="Player 1", options=playerNames,
@@ -234,7 +233,7 @@ with st.form(" "):
 
 graphCol = st.beta_container()
 pathsExpander = st.beta_expander("View paths")
-#
+
 with graphCol:
     if randomButton:
         player_1, player_2 = np.random.choice(list(names.keys()), 2, replace=False)
