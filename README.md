@@ -10,4 +10,4 @@ The goal of this app is to find and visualize all the shortest paths between two
 Player and roster data is scraped from [Basketball Reference](https://www.basketball-reference.com/) and cover the 1980-2021 NBA seasons.
 <br>
 <br>
-[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/cashcountinchi/nbapathfinder/main/app.py)
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://nbapathfinder.streamlit.app/)
